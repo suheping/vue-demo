@@ -1,44 +1,45 @@
 <template>
 
   <div class="custom-tree-container">
+
+    <!-- 备份 -->
     <div class="block"
       style="width:400px">
       <p>使用 scoped slot</p>
       <el-tree :data="data"
-        show-checkbox
         node-key="id"
         default-expand-all
         :expand-on-click-node="false">
         <span class="custom-tree-node"
           slot-scope="{ node, data }">
-          <!-- <span>{{ node.label }}</span> -->
-          <!-- 如果为编辑状态 -->
-          <template v-if="node.isEdit">
-            <!-- <span>{{ node.label }}</span> -->
-            <el-input v-model="node.label"
-              type="text"></el-input>
-            <el-button @click="cancelEdit()">取消</el-button>
-            <el-button @click="submitEdit()">保存</el-button>
+          <!-- 如果是编辑状态 -->
+          <template v-if="data.isEdit">
+            <el-input v-model="newLabel"
+              size="min"></el-input>
+            <el-button type="text"
+              @click="() => cancelEdit(node,data)">C</el-button>
+            <el-button type="text"
+              @click="() => submitEdit(node,data)">S</el-button>
           </template>
           <!-- 如果不是编辑状态 -->
-          <template v-else>
-            <span>{{ node.label }}</span>
-          </template>
+          <div v-else>
+            <span v-text="node.label"></span>
+          </div>
           <span>
             <el-button type="text"
               size="mini"
               @click="() => edit(node,data)">
-              Edit
+              E
             </el-button>
             <el-button type="text"
               size="mini"
               @click="() => append(data)">
-              Append
+              +
             </el-button>
             <el-button type="text"
               size="mini"
               @click="() => remove(node, data)">
-              Delete
+              D
             </el-button>
           </span>
         </span>
@@ -53,7 +54,8 @@ let id = 1000
 export default {
   name: 'appiumEdit',
   data() {
-    const data = [
+    var newLabel = ''
+    var data = [
       {
         id: 1,
         label: '一级 1',
@@ -94,34 +96,18 @@ export default {
             isEdit: false
           }
         ]
-      },
-      {
-        id: 3,
-        label: '一级 3',
-        isEdit: false,
-        children: [
-          {
-            id: 7,
-            label: '二级 3-1',
-            isEdit: false
-          },
-          {
-            id: 8,
-            label: '二级 3-2',
-            isEdit: false
-          }
-        ]
       }
     ]
     return {
-      // data: JSON.parse(JSON.stringify(data)),
-      data: JSON.parse(JSON.stringify(data))
+      data: JSON.parse(JSON.stringify(data)),
+      vable: false,
+      newLabel
     }
   },
 
   methods: {
     append(data) {
-      const newChild = { id: id++, label: 'testtest', children: [] }
+      const newChild = { id: id++, label: 'testtest' + id, children: [] }
       if (!data.children) {
         this.$set(data, 'children', [])
       }
@@ -136,8 +122,24 @@ export default {
     },
 
     edit(node, data) {
-      node.isEdit = true
-      console.log(node.label, node.isEdit)
+      console.log('before:', data.id, data.label, data.isEdit)
+      this.$set(data, 'isEdit', true)
+      this.newLabel = data.label
+      console.log('after:', data.id, data.label, data.isEdit)
+    },
+
+    submitEdit(node, data) {
+      console.log('点击了保存按钮')
+      console.log('before:', data.id, data.label)
+      this.$set(data, 'label', this.newLabel)
+      this.$set(data, 'isEdit', false)
+      console.log('after:', data.id, data.label)
+    },
+
+    cancelEdit(node, data) {
+      console.log('放弃编辑')
+      console.log(data.id, data.label)
+      this.$set(data, 'isEdit', false)
     }
   }
 }
@@ -150,6 +152,6 @@ export default {
   align-items: center;
   justify-content: space-between;
   font-size: 14px;
-  padding-right: 8px;
+  padding-right: 20px;
 }
 </style>
