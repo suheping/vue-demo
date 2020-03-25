@@ -2,102 +2,72 @@
   <div style="margin-right:50px;padding-left:50px;padding-top:50px;">
     <!-- <p>欢迎打开appium菜单</p> -->
     <!-- <div style="line-height:20px"> -->
-    <el-form
-      ref="postForm"
+    <el-form ref="postForm"
       :rules="rules"
-      :model="postForm"
-    >
+      :model="postForm">
       <!-- 发送请求按钮 -->
-      <el-button
-        v-loading="loading"
+      <el-button v-loading="loading"
         style="margin-left: 10px;"
         type="success"
-        @click="submitForm"
-      >
+        @click="submitForm">
         发送请求
       </el-button>
       <!-- 保存按钮 -->
-      <el-button
-        v-loading="loading"
+      <el-button v-loading="loading"
         style="margin-left: 10px;"
         type="success"
-        @click="saveForm"
-      >
+        @click="saveForm">
         保存
       </el-button>
       <!-- 接口名称输入框 -->
       <el-form-item prop="apiName">
-        <MDinput
-          v-model="postForm.apiName"
+        <MDinput v-model="postForm.apiName"
           :maxlength="100"
-          required
-        >
+          required>
           接口名称
         </MDinput>
       </el-form-item>
       <!-- 选择方法 -->
-      <el-form-item
-        label="接口方法"
-        prop="method"
-      >
-        <el-select
-          v-model="postForm.method"
+      <el-form-item label="接口方法"
+        prop="method">
+        <el-select v-model="postForm.method"
           filterable
           default-first-option
           remote
-          required
-        >
-          <el-option
-            v-for="item in options"
+          required>
+          <el-option v-for="item in options"
             :key="item"
             :label="item"
             :value="item"
-            :disabled="item.disabled"
-          />
+            :disabled="item.disabled" />
         </el-select>
       </el-form-item>
-      <el-form-item
-        style="margin-bottom: 40px;"
-        prop="url"
-      >
-        <MDinput
-          v-model="postForm.url"
+      <el-form-item style="margin-bottom: 40px;"
+        prop="url">
+        <MDinput v-model="postForm.url"
           :maxlength="100"
-          required
-        >
+          required>
           url
         </MDinput>
       </el-form-item>
       <!-- <input type="text" v-model="url" placeholder="请输入url" /> -->
-      <el-form-item
-        style="margin-bottom: 40px;"
-        prop="headers"
-      >
+      <el-form-item style="margin-bottom: 40px;"
+        prop="headers">
         <label>headers:</label>
-        <json-editor
-          ref="jsonEditor"
-          v-model="postForm.headers"
-        />
+        <json-editor ref="jsonEditor"
+          v-model="postForm.headers" />
       </el-form-item>
-      <el-form-item
-        style="margin-bottom: 40px;"
-        prop="body"
-      >
+      <el-form-item style="margin-bottom: 40px;"
+        prop="body">
         <label>body:</label>
-        <json-editor
-          ref="jsonEditor"
-          v-model="postForm.body"
-        />
+        <json-editor ref="jsonEditor"
+          v-model="postForm.body" />
       </el-form-item>
-      <el-form-item
-        style="margin-bottom: 40px;"
-        prop="res"
-      >
+      <el-form-item style="margin-bottom: 40px;"
+        prop="res">
         <label>res:</label>
-        <json-editor
-          ref="jsonEditor"
-          v-model="postForm.res"
-        />
+        <json-editor ref="jsonEditor"
+          v-model="postForm.res" />
       </el-form-item>
     </el-form>
     <!-- </div> -->
@@ -135,7 +105,7 @@ const defaultForm = {
 export default {
   name: 'Appium',
   components: { JsonEditor, MDinput },
-  data () {
+  data() {
     const validateRequire = (rule, value, callback) => {
       if (value === '') {
         this.$message({
@@ -153,20 +123,21 @@ export default {
       options: ['POST', 'GET'],
       rules: {
         apiName: [{ validator: validateRequire }],
-        url: [{ validator: validateRequire }],
-        headers: [{ validator: validateRequire }],
-        body: [{ validator: validateRequire }]
+        url: [{ validator: validateRequire }]
+        // headers: [{ validator: validateRequire }],
+        // body: [{ validator: validateRequire }]
       }
     }
   },
   methods: {
-    submitForm () {
+    submitForm() {
       // alert("点击了提交按钮");
       console.log(this.postForm)
       this.$refs.postForm.validate(valid => {
         if (valid) {
           this.loading = true
           this.postForm.res = ''
+          console.log(this.postForm.method)
           return request({
             url: this.postForm.url,
             method: this.postForm.method,
@@ -187,10 +158,10 @@ export default {
               this.postForm.status = 'published'
               this.loading = false
             })
-            .catch(function (error) {
+            .catch(function(error) {
               console.log(error)
-              this.postForm.res = error
-              this.loading = false
+              // this.postForm.res = error
+              // this.loading = false
             })
         } else {
           console.log('error submit!!')
@@ -199,7 +170,7 @@ export default {
         }
       })
     },
-    saveForm () {
+    saveForm() {
       alert('点击了保存按钮')
     }
   }

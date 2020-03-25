@@ -108,6 +108,58 @@ export const constantRoutes = [
       }
     ]
   },
+  // peace新增router，20200316
+  {
+    path: '/appium',
+    component: Layout,
+    children: [
+      {
+        path: 'index',
+        component: () => import('@/views/appium/index'),
+        name: 'appium',
+        meta: { title: 'appium', icon: 'clipboard' }
+      }
+    ]
+  },
+
+  {
+    path: '/appium-list',
+    component: Layout,
+    children: [
+      {
+        path: 'index',
+        component: () => import('@/views/appium-list/index'),
+        name: 'appiumList',
+        meta: { title: 'appiumList', icon: 'clipboard' }
+      }
+    ]
+  },
+
+  {
+    path: '/appium-tree',
+    component: Layout,
+    children: [
+      {
+        path: 'index',
+        component: () => import('@/views/appium-tree/index'),
+        name: 'appiumTree',
+        meta: { title: 'appiumTree', icon: 'clipboard' }
+      }
+    ]
+  },
+
+  {
+    path: '/appium-tree1',
+    component: Layout,
+    children: [
+      {
+        path: 'index',
+        component: () => import('@/views/appium-tree1/index'),
+        name: 'appiumTree1',
+        meta: { title: 'appiumTree1', icon: 'clipboard' }
+      }
+    ]
+  },
   {
     path: '/profile',
     component: Layout,
@@ -397,58 +449,7 @@ export const asyncRoutes = [
     ]
   },
 
-  // peace新增router，20200316
-  {
-    path: '/appium',
-    component: Layout,
-    children: [
-      {
-        path: 'index',
-        component: () => import('@/views/appium/index'),
-        name: 'appium',
-        meta: { title: 'appium', icon: 'clipboard' }
-      }
-    ]
-  },
 
-  {
-    path: '/appium-list',
-    component: Layout,
-    children: [
-      {
-        path: 'index',
-        component: () => import('@/views/appium-list/index'),
-        name: 'appiumList',
-        meta: { title: 'appiumList', icon: 'clipboard' }
-      }
-    ]
-  },
-
-  {
-    path: '/appium-tree',
-    component: Layout,
-    children: [
-      {
-        path: 'index',
-        component: () => import('@/views/appium-tree/index'),
-        name: 'appiumTree',
-        meta: { title: 'appiumTree', icon: 'clipboard' }
-      }
-    ]
-  },
-
-  {
-    path: '/appium-edit',
-    component: Layout,
-    children: [
-      {
-        path: 'index',
-        component: () => import('@/views/appium-edit/index'),
-        name: 'appiumEdit',
-        meta: { title: 'appiumEdit', icon: 'clipboard' }
-      }
-    ]
-  },
 
   // 404 page must be placed at the end !!!
   { path: '*', redirect: '/404', hidden: true }
