@@ -19,10 +19,10 @@
         <span class="custom-tree-node"
           slot-scope="{ node, data }">
           <!-- 如果是编辑状态 -->
-          <template v-if="data.isEdit">
+          <template v-if="data.isEdit==1">
             <el-input ref="input"
               @blur="() => submitEdit(node,data)"
-              v-model="newLabel"
+              v-model="newApiGroupName"
               style="height:20px line-height:20px"></el-input>
             <!-- 放弃、提交按钮废弃，改为失去焦点自动提交 -->
             <!-- <el-button type="text"
@@ -34,19 +34,21 @@
           </template>
           <!-- 如果不是编辑状态 -->
           <span v-else
-            v-text="node.label"></span>
+            v-text="data.apiGroupName"></span>
           <span>
-            <el-button type="text"
+            <el-button v-if="data.id!=1"
+              type="text"
               size="mini"
               @click="() => edit(node,data)">
               E
             </el-button>
             <el-button type="text"
               size="mini"
-              @click="() => append(data)">
+              @click="() => append(node,data)">
               +
             </el-button>
-            <el-button type="text"
+            <el-button v-if="data.id!=1"
+              type="text"
               size="mini"
               @click="() => remove(node, data)">
               D
@@ -61,6 +63,7 @@
 <script>
 // import { fetchList } from '@/api/article'
 import { getApiGroup } from '@/api/appium'
+import { updateApiGroup } from '@/api/appium'
 
 let id = 1000
 export default {
@@ -68,10 +71,10 @@ export default {
   data() {
     return {
       data: [],
-      newLabel: '',
+      newApiGroupName: '',
       defaultProps: {
         children: 'children',
-        label: 'label'
+        apiGroupName: 'apiGroupName'
       }
     }
   },
@@ -81,49 +84,67 @@ export default {
   methods: {
     // 调api获取接口分组数据
     getApiGroupData() {
-      getApiGroup()
+      getApiGroup(1)
         .then(response => {
           this.data = response
+          console.log('data:', this.data)
         })
         .catch(err => {
           console.log(err)
         })
     },
     handleDragStart(node, ev) {
-      console.log('drag start', node)
+      console.log('drag start', node.data.apiGroupName)
     },
     handleDragEnter(draggingNode, dropNode, ev) {
-      console.log('tree drag enter: ', dropNode.label)
+      console.log('tree drag enter: ', dropNode.data.apiGroupName)
     },
     handleDragLeave(draggingNode, dropNode, ev) {
-      console.log('tree drag leave: ', dropNode.label)
+      console.log('tree drag leave: ', dropNode.data.apiGroupName)
     },
     handleDragOver(draggingNode, dropNode, ev) {
-      console.log('tree drag over: ', dropNode.label)
+      console.log('tree drag over: ', dropNode.data.apiGroupName)
     },
     handleDragEnd(draggingNode, dropNode, dropType, ev) {
-      console.log('tree drag end: ', dropNode && dropNode.label, dropType)
+      console.log(
+        'tree drag end: ',
+        dropNode && dropNode.data.apiGroupName,
+        dropType
+      )
     },
     handleDrop(draggingNode, dropNode, dropType, ev) {
-      console.log('tree drop: ', dropNode.label, dropType)
+      console.log('tree drop: ', dropNode.data.apiGroupName, dropType)
     },
     allowDrop(draggingNode, dropNode, type) {
-      if (dropNode.data.label === '二级 3-1') {
-        return type !== 'inner'
+      if (dropNode.data.id === 1) {
+        return false
       } else {
         return true
       }
     },
     allowDrag(draggingNode) {
-      return draggingNode.data.label.indexOf('三级 3-2-2') === -1
+      // 顶层默认分组不允许拖拽
+      if (draggingNode.data.id === 1) {
+        return false
+      } else {
+        return true
+      }
+      // return draggingNode.data.apiGroupName.indexOf('三级 3-2-2') === -1
     },
 
-    append(data) {
-      const newChild = { id: id++, label: 'testtest' + id, children: [] }
+    append(node, data) {
+      // var pid = data.parentApiGroupId + ':' + data.id
+      const newChild = {
+        id: id++,
+        // parentApiGroupId: pid,
+        apiGroupName: 'testtest' + id,
+        children: []
+      }
       if (!data.children) {
         this.$set(data, 'children', [])
       }
       data.children.push(newChild)
+      this.updateApiGroup(this.data)
     },
 
     remove(node, data) {
@@ -131,33 +152,52 @@ export default {
       const children = parent.data.children || parent.data
       const index = children.findIndex(d => d.id === data.id)
       children.splice(index, 1)
+      this.updateApiGroup(this.data)
     },
 
     edit(node, data) {
-      console.log('before:', data.id, data.label, data.isEdit)
-      this.$set(data, 'isEdit', true)
-      this.newLabel = data.label
+      console.log(
+        'before:',
+        data.id,
+        // data.parentApiGroupId,
+        data.apiGroupName,
+        data.isEdit
+      )
+      this.$set(data, 'isEdit', 1)
+      this.newApiGroupName = data.apiGroupName
       this.$nextTick(() => {
         this.$refs.input.focus()
       })
-      console.log('after:', data.id, data.label, data.isEdit)
+      console.log('after:', data.id, data.apiGroupName, data.isEdit)
     },
 
     submitEdit(node, data) {
-      console.log('点击了保存按钮')
-      console.log('before:', data.id, data.label)
-      this.$set(data, 'label', this.newLabel)
-      this.newLabel = ''
-      this.$set(data, 'isEdit', false)
-      console.log('after:', data.id, data.label)
+      // console.log('点击了保存按钮')
+      // console.log('before:', data.id, data.apiGroupName)
+      this.$set(data, 'apiGroupName', this.newApiGroupName)
+      this.newApiGroupName = ''
+      this.$set(data, 'isEdit', 0)
+      // console.log('after:', data.id, data.apiGroupName)
       // console.log(this.data)
+      this.updateApiGroup(this.data)
     },
 
     cancelEdit(node, data) {
-      console.log('放弃编辑')
-      console.log(data.id, data.label)
-      this.newLabel = ''
-      this.$set(data, 'isEdit', false)
+      // console.log('放弃编辑')
+      // console.log(data.id, data.apiGroupName)
+      this.newApiGroupName = ''
+      this.$set(data, 'isEdit', 0)
+    },
+
+    updateApiGroup(data) {
+      console.log(data)
+      updateApiGroup(1, data)
+        .then(response => {
+          console.log(response)
+        })
+        .catch(err => {
+          console.log(err)
+        })
     }
   }
 }
