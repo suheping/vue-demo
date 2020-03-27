@@ -65,7 +65,7 @@
 import { getApiGroup } from '@/api/appium'
 import { updateApiGroup } from '@/api/appium'
 
-let id = 1000
+// let id = 1000
 export default {
   name: 'appiumTree1',
   data() {
@@ -134,10 +134,11 @@ export default {
 
     append(node, data) {
       // var pid = data.parentApiGroupId + ':' + data.id
+      var timestamp = new Date().getTime()
       const newChild = {
-        id: id++,
+        id: timestamp,
         // parentApiGroupId: pid,
-        apiGroupName: 'testtest' + id,
+        apiGroupName: 'test' + timestamp,
         children: []
       }
       if (!data.children) {
