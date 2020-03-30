@@ -111,6 +111,8 @@ export default {
         dropNode && dropNode.data.apiGroupName,
         dropType
       )
+      // 调后端更新
+      this.updateApiGroup(this.data)
     },
     handleDrop(draggingNode, dropNode, dropType, ev) {
       console.log('tree drop: ', dropNode.data.apiGroupName, dropType)
@@ -137,7 +139,7 @@ export default {
       var timestamp = new Date().getTime()
       const newChild = {
         id: timestamp,
-        // parentApiGroupId: pid,
+        isEdit: 0,
         apiGroupName: 'test' + timestamp,
         children: []
       }
@@ -174,13 +176,18 @@ export default {
 
     submitEdit(node, data) {
       // console.log('点击了保存按钮')
-      // console.log('before:', data.id, data.apiGroupName)
-      this.$set(data, 'apiGroupName', this.newApiGroupName)
-      this.newApiGroupName = ''
-      this.$set(data, 'isEdit', 0)
-      // console.log('after:', data.id, data.apiGroupName)
-      // console.log(this.data)
-      this.updateApiGroup(this.data)
+      if (data.apiGroupName == this.newApiGroupName) {
+        console.log('没有修改')
+        this.newApiGroupName = ''
+        this.$set(data, 'isEdit', 0)
+      } else {
+        this.$set(data, 'apiGroupName', this.newApiGroupName)
+        this.newApiGroupName = ''
+        this.$set(data, 'isEdit', 0)
+        // console.log('after:', data.id, data.apiGroupName)
+        // console.log(this.data)
+        this.updateApiGroup(this.data)
+      }
     },
 
     cancelEdit(node, data) {

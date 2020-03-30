@@ -18,3 +18,10 @@ export function updateApiGroup (projid, data) {
     data: JSON.stringify(data)
   })
 }
+
+export function getApi (projid, apiGroupId) {
+  return request({
+    url: 'http://127.0.0.1:8000/getApi/' + projid + '/' + apiGroupId + '/',
+    method: 'get',
+  })
+}
