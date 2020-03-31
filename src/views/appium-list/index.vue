@@ -1,7 +1,7 @@
 /* eslint-disable vue/max-attributes-per-line */
 <template>
   <div class="app-container">
-
+    <!-- 
     <div class="filter-container">
       <el-input v-model="listQuery.title"
         :placeholder="$t('table.title')"
@@ -56,17 +56,18 @@
         @change="tableKey = tableKey + 1">
         {{ $t("table.reviewer") }}
       </el-checkbox>
-    </div>
+    </div> -->
     <!-- 
     <div>
       <el-button type="primary" icon="el-icon-edit" style="margin-top: 10px; margin-bottom: 10px;" @click="dialogFormVisible = !dialogFormVisible">添加</el-button>
     </div> -->
+
     <!-- Note that row-key is necessary to get a correct row order. -->
     <!-- 列表 -->
     <el-table ref="AppiumList"
       v-loading="listLoading"
       :data="list"
-      row-key="id"
+      row-key="apiSortNo"
       border
       fit
       highlight-current-row
@@ -79,66 +80,30 @@
         </template>
       </el-table-column>
 
-      <el-table-column width="180px"
+      <!-- <el-table-column width="180px"
         align="center"
-        label="Date">
+        label="排序号">
         <template slot-scope="{ row }">
-          <span>{{ row.timestamp | parseTime("{y}-{m}-{d} {h}:{i}") }}</span>
+          <span>{{ row.apiSortNo }}</span>
         </template>
-      </el-table-column>
+      </el-table-column> -->
 
       <el-table-column min-width="300px"
-        label="Title">
+        label="接口名称">
         <template slot-scope="{ row }">
-          <span>{{ row.title }}</span>
+          <span>{{ row.apiName }}</span>
         </template>
       </el-table-column>
 
       <el-table-column width="110px"
         align="center"
-        label="Author">
+        label="接口路径">
         <template slot-scope="{ row }">
-          <span>{{ row.author }}</span>
-        </template>
-      </el-table-column>
-
-      <el-table-column width="100px"
-        label="Importance">
-        <template slot-scope="{ row }">
-          <svg-icon v-for="n in +row.importance"
-            :key="n"
-            icon-class="star"
-            class="icon-star" />
-        </template>
-      </el-table-column>
-
-      <el-table-column align="center"
-        label="Readings"
-        width="95">
-        <template slot-scope="{ row }">
-          <span>{{ row.pageviews }}</span>
-        </template>
-      </el-table-column>
-
-      <el-table-column class-name="status-col"
-        label="Status"
-        width="110">
-        <template slot-scope="{ row }">
-          <el-tag :type="row.status | statusFilter">
-            {{ row.status }}
-          </el-tag>
-        </template>
-      </el-table-column>
-
-      <el-table-column align="center"
-        label="Drag"
-        width="80">
-        <template slot-scope="{}">
-          <svg-icon class="drag-handler"
-            icon-class="drag" />
+          <span>{{ row.apiPath }}</span>
         </template>
       </el-table-column>
     </el-table>
+
     <!-- $t is vue-i18n global function to translate lang (lang in @/lang)  -->
     <!-- 显示新旧列表顺序 -->
     <div class="show-d">
@@ -169,6 +134,7 @@
 
 <script>
 import { fetchList } from '@/api/article'
+import { getApi, updateApis } from '@/api/appium'
 import Sortable from 'sortablejs'
 
 export default {
@@ -186,13 +152,13 @@ export default {
   data() {
     return {
       list: null,
-      total: null,
+      // total: null,
       listLoading: true,
       dialogFormVisible: false,
-      listQuery: {
-        page: 1,
-        limit: 10
-      },
+      // listQuery: {
+      //   page: 1,
+      //   limit: 10
+      // },
       sortable: null,
       oldList: [],
       newList: []
@@ -202,13 +168,24 @@ export default {
     this.getList()
   },
   methods: {
+    // async getList() {
+    //   this.listLoading = true
+    //   // const { data } = await fetchList(this.listQuery)
+    //   const { data } = await getApi(1, 1)
+    //   this.list = data.items
+    //   this.total = data.total
+    //   this.listLoading = false
+    //   this.oldList = this.list.map(v => v.id)
+    //   this.newList = this.oldList.slice()
+    //   this.$nextTick(() => {
+    //     this.setSort()
+    //   })
+    // },
     async getList() {
       this.listLoading = true
-      const { data } = await fetchList(this.listQuery)
-      this.list = data.items
-      this.total = data.total
+      this.list = await getApi(1, 1)
       this.listLoading = false
-      this.oldList = this.list.map(v => v.id)
+      this.oldList = this.list.map(v => v.apiSortNo)
       this.newList = this.oldList.slice()
       this.$nextTick(() => {
         this.setSort()
@@ -218,6 +195,7 @@ export default {
       const el = this.$refs.AppiumList.$el.querySelectorAll(
         '.el-table__body-wrapper > table > tbody'
       )[0]
+      console.log(el)
       this.sortable = Sortable.create(el, {
         ghostClass: 'sortable-ghost', // Class name for the drop placeholder,
         setData: function(dataTransfer) {
@@ -228,6 +206,21 @@ export default {
         onEnd: evt => {
           const targetRow = this.list.splice(evt.oldIndex, 1)[0]
           this.list.splice(evt.newIndex, 0, targetRow)
+          // 初始化sortno为1
+          var sortno = 1
+          // 遍历拖拽后的list
+          for (var i in this.list) {
+            // 将sortno赋值给每条用例
+            this.list[i].apiSortNo = sortno
+            sortno = sortno + 1
+          }
+          console.log(this.list)
+          // 调后端更新接口
+          updateApis(this.list)
+          // const oldno = this.list[evt.oldIndex].apiSortNo
+          // const newno = this.list[evt.newIndex].apiSortNo
+          // console.log(evt.oldIndex, evt.newIndex)
+          // console.log(oldno, newno)
 
           // for show the changes, you can delete in you code
           const tempIndex = this.newList.splice(evt.oldIndex, 1)[0]
@@ -246,8 +239,8 @@ export default {
 <style>
 .sortable-ghost {
   opacity: 0.8;
-  color: #fff !important;
-  background: #42b983 !important;
+  color: #f80606 !important;
+  background: #20e03a !important;
 }
 </style>
 

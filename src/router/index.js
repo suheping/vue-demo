@@ -149,6 +149,18 @@ export const constantRoutes = [
   },
 
   {
+    path: '/appium-list1',
+    component: Layout,
+    children: [
+      {
+        path: 'index',
+        component: () => import('@/views/appium-list1/index'),
+        name: 'appiumList1',
+        meta: { title: 'appiumList1', icon: 'clipboard' }
+      }
+    ]
+  },
+  {
     path: '/appium-tree1',
     component: Layout,
     children: [
