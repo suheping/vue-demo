@@ -1,4 +1,3 @@
-/* eslint-disable vue/max-attributes-per-line */
 <template>
   <div class="app-container">
     <!-- 
@@ -67,7 +66,7 @@
     <el-table ref="AppiumList"
       v-loading="listLoading"
       :data="list"
-      row-key="apiSortNo"
+      row-key="id"
       border
       fit
       highlight-current-row
@@ -102,6 +101,15 @@
           <span>{{ row.apiPath }}</span>
         </template>
       </el-table-column>
+
+      <el-table-column width="110px"
+        align="center"
+        label="操作">
+        <template slot-scope="{ row }">
+          <el-button>编辑</el-button>
+        </template>
+      </el-table-column>
+
     </el-table>
 
     <!-- $t is vue-i18n global function to translate lang (lang in @/lang)  -->
@@ -168,19 +176,6 @@ export default {
     this.getList()
   },
   methods: {
-    // async getList() {
-    //   this.listLoading = true
-    //   // const { data } = await fetchList(this.listQuery)
-    //   const { data } = await getApi(1, 1)
-    //   this.list = data.items
-    //   this.total = data.total
-    //   this.listLoading = false
-    //   this.oldList = this.list.map(v => v.id)
-    //   this.newList = this.oldList.slice()
-    //   this.$nextTick(() => {
-    //     this.setSort()
-    //   })
-    // },
     async getList() {
       this.listLoading = true
       this.list = await getApi(1, 1)
@@ -195,7 +190,7 @@ export default {
       const el = this.$refs.AppiumList.$el.querySelectorAll(
         '.el-table__body-wrapper > table > tbody'
       )[0]
-      console.log(el)
+      // console.log(el)
       this.sortable = Sortable.create(el, {
         ghostClass: 'sortable-ghost', // Class name for the drop placeholder,
         setData: function(dataTransfer) {
@@ -214,7 +209,7 @@ export default {
             this.list[i].apiSortNo = sortno
             sortno = sortno + 1
           }
-          console.log(this.list)
+          // console.log(this.list)
           // 调后端更新接口
           updateApis(this.list)
           // const oldno = this.list[evt.oldIndex].apiSortNo
