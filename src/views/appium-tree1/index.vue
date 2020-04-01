@@ -1,7 +1,7 @@
 <template>
   <div class="custom-tree-container">
     <div class="block"
-      style="width:500px">
+      style="width:300px">
       <p>使用 scoped slot</p>
       <el-tree :data="data"
         node-key="id"
@@ -140,7 +140,7 @@ export default {
       const newChild = {
         id: timestamp,
         isEdit: 0,
-        apiGroupName: 'test' + timestamp,
+        apiGroupName: 'T' + timestamp,
         children: []
       }
       if (!data.children) {
