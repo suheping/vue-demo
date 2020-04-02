@@ -160,6 +160,8 @@ export default {
   data() {
     return {
       list: null,
+      projId: 1,
+      apiGroupId: 1,
       // total: null,
       listLoading: true,
       dialogFormVisible: false,
@@ -175,10 +177,18 @@ export default {
   created() {
     this.getList()
   },
+  watch: {
+    '$store.getters.apiGroupId'() {
+      this.apiGroupId = this.$store.getters.apiGroupId
+      console.log('监听到apiGroupId改变', this.apiGroupId)
+      this.getList()
+    }
+  },
   methods: {
     async getList() {
+      console.log('调用获取接口列表')
       this.listLoading = true
-      this.list = await getApi(1, 1)
+      this.list = await getApi(this.projId, this.apiGroupId)
       this.listLoading = false
       this.oldList = this.list.map(v => v.apiSortNo)
       this.newList = this.oldList.slice()

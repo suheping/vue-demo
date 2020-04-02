@@ -7,6 +7,7 @@
         node-key="id"
         default-expand-all
         :expand-on-click-node="false"
+        @node-click="nodeclick"
         @node-drag-start="handleDragStart"
         @node-drag-enter="handleDragEnter"
         @node-drag-leave="handleDragLeave"
@@ -206,6 +207,12 @@ export default {
         .catch(err => {
           console.log(err)
         })
+    },
+
+    nodeclick(node, data, obj) {
+      console.log('点击了：', node.id, node.apiGroupName)
+      this.$store.dispatch('appium/changeApiGroupId', node.id)
+      console.log(this.$store.getters.apiGroupId)
     }
   }
 }
