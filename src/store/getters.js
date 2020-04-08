@@ -14,6 +14,9 @@ const getters = {
   errorLogs: state => state.errorLog.logs,
   projId: state => state.appium.projId,
   apiGroupId: state => state.appium.apiGroupId,
-  apiId: state => state.appium.apiId
+  apiId: state => state.appium.apiId,
+  apiGroupName: state => state.appium.apiGroupName,
+  apiList: state => state.appium.apiList,
+  isApiCreate: state => state.appium.isApiCreate
 }
 export default getters

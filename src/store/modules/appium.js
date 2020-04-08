@@ -1,8 +1,10 @@
-
 const state = {
   projId: 1,
   apiGroupId: '',
-  apiId: ''
+  apiGroupName: '',
+  apiId: '',
+  apiList: '',
+  isApiCreate: ''
 }
 
 const mutations = {
@@ -14,6 +16,15 @@ const mutations = {
   },
   SET_APIID: (state, apiId) => {
     state.apiId = apiId
+  },
+  SET_APIGROUPNAME: (state, apiGroupName) => {
+    state.apiGroupName = apiGroupName
+  },
+  SET_APILIST: (state, apiList) => {
+    state.apiList = apiList
+  },
+  SET_ISAPICREATE: (state, isApiCreate) => {
+    state.isApiCreate = isApiCreate
   }
 }
 
@@ -27,6 +38,15 @@ const actions = {
   changeApiId ({ commit }, data) {
     commit('SET_APIID', data)
   },
+  changeApiGroupName ({ commit }, data) {
+    commit('SET_APIGROUPNAME', data)
+  },
+  changeApiList ({ commit }, data) {
+    commit('SET_APILIST', data)
+  },
+  changeIsApiCreate ({ commit }, data) {
+    commit('SET_ISAPICREATE', data)
+  }
 }
 
 export default {

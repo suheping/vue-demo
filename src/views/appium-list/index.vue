@@ -60,26 +60,32 @@
     <div>
       <el-button type="primary" icon="el-icon-edit" style="margin-top: 10px; margin-bottom: 10px;" @click="dialogFormVisible = !dialogFormVisible">添加</el-button>
     </div> -->
-
+    <div name="apiHeaders"
+      style="margin-bottom: 1.5cm">
+      <span>{{apiGroupName}}({{list.length}}个接口)</span>
+      <el-button style="float: right;"
+        @click="dialogFormVisible = !dialogFormVisible">添加</el-button>
+    </div>
     <!-- Note that row-key is necessary to get a correct row order. -->
     <!-- 列表 -->
-    <el-table ref="AppiumList"
-      v-loading="listLoading"
-      :data="list"
-      row-key="id"
-      border
-      fit
-      highlight-current-row
-      style="width: 100%">
-      <el-table-column align="center"
-        label="ID"
-        width="65">
-        <template slot-scope="{ row }">
-          <span>{{ row.id }}</span>
-        </template>
-      </el-table-column>
+    <div name="apiList">
+      <el-table ref="AppiumList"
+        v-loading="listLoading"
+        :data="list"
+        row-key="id"
+        border
+        fit
+        highlight-current-row
+        style="width: 100%">
+        <el-table-column align="center"
+          label="ID"
+          width="65">
+          <template slot-scope="{ row }">
+            <span>{{ row.id }}</span>
+          </template>
+        </el-table-column>
 
-      <!-- <el-table-column width="180px"
+        <!-- <el-table-column width="180px"
         align="center"
         label="排序号">
         <template slot-scope="{ row }">
@@ -87,31 +93,31 @@
         </template>
       </el-table-column> -->
 
-      <el-table-column min-width="300px"
-        label="接口名称">
-        <template slot-scope="{ row }">
-          <span>{{ row.apiName }}</span>
-        </template>
-      </el-table-column>
+        <el-table-column min-width="300px"
+          label="接口名称">
+          <template slot-scope="{ row }">
+            <span>{{ row.apiName }}</span>
+          </template>
+        </el-table-column>
 
-      <el-table-column width="110px"
-        align="center"
-        label="接口路径">
-        <template slot-scope="{ row }">
-          <span>{{ row.apiPath }}</span>
-        </template>
-      </el-table-column>
+        <el-table-column width="110px"
+          align="center"
+          label="接口路径">
+          <template slot-scope="{ row }">
+            <span>{{ row.apiPath }}</span>
+          </template>
+        </el-table-column>
 
-      <el-table-column width="110px"
-        align="center"
-        label="操作">
-        <template slot-scope="{ row }">
-          <el-button>编辑</el-button>
-        </template>
-      </el-table-column>
+        <el-table-column width="110px"
+          align="center"
+          label="操作">
+          <template slot-scope="{ row }">
+            <el-button>编辑</el-button>
+          </template>
+        </el-table-column>
 
-    </el-table>
-
+      </el-table>
+    </div>
     <!-- $t is vue-i18n global function to translate lang (lang in @/lang)  -->
     <!-- 显示新旧列表顺序 -->
     <div class="show-d">
@@ -125,28 +131,30 @@
     <!-- 弹窗 -->
     <el-dialog :visible.sync="dialogFormVisible"
       close>
-      <p>this is a test</p>
+      <!-- <p>this is a test</p> -->
+      <Appium></Appium>
       <div slot="footer"
         class="dialog-footer">
-        <el-button @click="dialogFormVisible = false">
+        <!-- <el-button @click="dialogFormVisible = false">
           {{ $t("table.cancel") }}
         </el-button>
         <el-button type="primary"
           @click="submitForm">
-          {{ $t("table.confirm") }}
-        </el-button>
+          {{ $t("table.confirm") }} -->
+        <!-- </el-button> -->
       </div>
     </el-dialog>
   </div>
 </template>
 
 <script>
-import { fetchList } from '@/api/article'
 import { getApi, updateApis } from '@/api/appium'
 import Sortable from 'sortablejs'
+import Appium from '@/views/appium'
 
 export default {
   name: 'AppiumList',
+  components: { Appium },
   filters: {
     statusFilter(status) {
       const statusMap = {
@@ -162,6 +170,7 @@ export default {
       list: null,
       projId: 1,
       apiGroupId: 1,
+      apiGroupName: '默认分组',
       // total: null,
       listLoading: true,
       dialogFormVisible: false,
@@ -180,7 +189,14 @@ export default {
   watch: {
     '$store.getters.apiGroupId'() {
       this.apiGroupId = this.$store.getters.apiGroupId
-      console.log('监听到apiGroupId改变', this.apiGroupId)
+      this.apiGroupName = this.$store.getters.apiGroupName
+      console.log('监听到apiGroupId改变', this.apiGroupId, this.apiGroupName)
+      this.getList()
+    },
+    '$store.getters.isApiCreate'() {
+      this.dialogFormVisible = this.$store.getters.isApiCreate
+      console.log('appium-list---isApiCreate:', this.$store.getters.isApiCreate)
+      console.log('appium-list---dialogFormVisible:', this.dialogFormVisible)
       this.getList()
     }
   },
@@ -189,6 +205,8 @@ export default {
       console.log('调用获取接口列表')
       this.listLoading = true
       this.list = await getApi(this.projId, this.apiGroupId)
+      console.log('接口列表：', this.list.length)
+      this.$store.dispatch('appium/changeApiList', this.list)
       this.listLoading = false
       this.oldList = this.list.map(v => v.apiSortNo)
       this.newList = this.oldList.slice()

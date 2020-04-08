@@ -36,3 +36,14 @@ export function updateApis (data) {
     data: JSON.stringify(data)
   })
 }
+
+export function addApi (data) {
+  return request({
+    url: 'http://127.0.0.1:8000/addApi/',
+    method: 'post',
+    headers: {
+      'Content-Type': 'text/plain;charset=utf-8'  //如果写成contentType会报错
+    },
+    data: JSON.stringify(data)
+  })
+}

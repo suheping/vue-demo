@@ -212,6 +212,7 @@ export default {
     nodeclick(node, data, obj) {
       console.log('点击了：', node.id, node.apiGroupName)
       this.$store.dispatch('appium/changeApiGroupId', node.id)
+      this.$store.dispatch('appium/changeApiGroupName', node.apiGroupName)
       console.log(this.$store.getters.apiGroupId)
     }
   }
