@@ -1,70 +1,11 @@
 <template>
   <div class="app-container">
-    <!-- 
-    <div class="filter-container">
-      <el-input v-model="listQuery.title"
-        :placeholder="$t('table.title')"
-        style="width: 200px;"
-        class="filter-item"
-        @keyup.enter.native="handleFilter" />
-      <el-select v-model="listQuery.importance"
-        :placeholder="$t('table.importance')"
-        clearable
-        style="width: 90px"
-        class="filter-item">
-        <el-option v-for="item in importanceOptions"
-          :key="item"
-          :label="item"
-          :value="item" />
-      </el-select>
-      <el-select v-model="listQuery.type"
-        :placeholder="$t('table.type')"
-        clearable
-        class="filter-item"
-        style="width: 130px">
-        <el-option v-for="item in calendarTypeOptions"
-          :key="item.key"
-          :label="item.display_name + '(' + item.key + ')'"
-          :value="item.key" />
-      </el-select>
-      <el-button v-waves
-        class="filter-item"
-        type="primary"
-        icon="el-icon-search"
-        @click="handleFilter">
-        {{ $t("table.search") }}
-      </el-button>
-      <el-button class="filter-item"
-        style="margin-left: 10px;"
-        type="primary"
-        icon="el-icon-edit"
-        @click="dialogFormVisible = !dialogFormVisible">
-        {{ $t("table.add") }}
-      </el-button>
-      <el-button v-waves
-        :loading="downloadLoading"
-        class="filter-item"
-        type="primary"
-        icon="el-icon-download"
-        @click="handleDownload">
-        {{ $t("table.export") }}
-      </el-button>
-      <el-checkbox v-model="showReviewer"
-        class="filter-item"
-        style="margin-left:15px;"
-        @change="tableKey = tableKey + 1">
-        {{ $t("table.reviewer") }}
-      </el-checkbox>
-    </div> -->
-    <!-- 
-    <div>
-      <el-button type="primary" icon="el-icon-edit" style="margin-top: 10px; margin-bottom: 10px;" @click="dialogFormVisible = !dialogFormVisible">添加</el-button>
-    </div> -->
     <div name="apiHeaders"
       style="margin-bottom: 1.5cm">
       <span>{{apiGroupName}}({{list.length}}个接口)</span>
+      <!-- <el-button style="float: right;" @click="dialogFormVisible = !dialogFormVisible">添加</el-button> -->
       <el-button style="float: right;"
-        @click="dialogFormVisible = !dialogFormVisible">添加</el-button>
+        @click="()=>addApi()">添加</el-button>
     </div>
     <!-- Note that row-key is necessary to get a correct row order. -->
     <!-- 列表 -->
@@ -85,14 +26,6 @@
           </template>
         </el-table-column>
 
-        <!-- <el-table-column width="180px"
-        align="center"
-        label="排序号">
-        <template slot-scope="{ row }">
-          <span>{{ row.apiSortNo }}</span>
-        </template>
-      </el-table-column> -->
-
         <el-table-column min-width="300px"
           label="接口名称">
           <template slot-scope="{ row }">
@@ -112,7 +45,8 @@
           align="center"
           label="操作">
           <template slot-scope="{ row }">
-            <el-button>编辑</el-button>
+            <!-- <el-button @click="dialogFormVisible = !dialogFormVisible">编辑</el-button> -->
+            <el-button @click="()=>editApi(row)">编辑</el-button>
           </template>
         </el-table-column>
 
@@ -133,16 +67,6 @@
       close>
       <!-- <p>this is a test</p> -->
       <Appium></Appium>
-      <div slot="footer"
-        class="dialog-footer">
-        <!-- <el-button @click="dialogFormVisible = false">
-          {{ $t("table.cancel") }}
-        </el-button>
-        <el-button type="primary"
-          @click="submitForm">
-          {{ $t("table.confirm") }} -->
-        <!-- </el-button> -->
-      </div>
     </el-dialog>
   </div>
 </template>
@@ -171,13 +95,8 @@ export default {
       projId: 1,
       apiGroupId: 1,
       apiGroupName: '默认分组',
-      // total: null,
       listLoading: true,
       dialogFormVisible: false,
-      // listQuery: {
-      //   page: 1,
-      //   limit: 10
-      // },
       sortable: null,
       oldList: [],
       newList: []
@@ -237,13 +156,8 @@ export default {
             this.list[i].apiSortNo = sortno
             sortno = sortno + 1
           }
-          // console.log(this.list)
           // 调后端更新接口
           updateApis(this.list)
-          // const oldno = this.list[evt.oldIndex].apiSortNo
-          // const newno = this.list[evt.newIndex].apiSortNo
-          // console.log(evt.oldIndex, evt.newIndex)
-          // console.log(oldno, newno)
 
           // for show the changes, you can delete in you code
           const tempIndex = this.newList.splice(evt.oldIndex, 1)[0]
@@ -254,6 +168,16 @@ export default {
     submitForm() {
       this.dialogFormVisible = false
       console.log('你提交了dialog')
+    },
+    editApi(row) {
+      this.dialogFormVisible = true
+      console.log('点击了编辑按钮')
+      console.log(row)
+      this.$store.dispatch('appium/changeCApiData', row)
+    },
+    addApi() {
+      this.dialogFormVisible = true
+      console.log('点击了添加按钮')
     }
   }
 }

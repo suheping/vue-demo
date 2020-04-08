@@ -147,12 +147,15 @@ export default {
       }
     }
     return {
+      // postForm: Object.assign({}, defaultForm),
       postForm: Object.assign({}, defaultForm),
       loading: false,
       options: ['POST', 'GET'],
       protocols: ['HTTP', 'HTTPS'],
       rules: {
         apiName: [{ validator: validateRequire }],
+        apiMethod: [{ validator: validateRequire }],
+        apiProtocol: [{ validator: validateRequire }],
         apiPath: [{ validator: validateRequire }]
         // headers: [{ validator: validateRequire }],
         // body: [{ validator: validateRequire }]

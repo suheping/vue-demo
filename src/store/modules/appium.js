@@ -4,7 +4,8 @@ const state = {
   apiGroupName: '',
   apiId: '',
   apiList: '',
-  isApiCreate: ''
+  isApiCreate: '',
+  cApiData: ''
 }
 
 const mutations = {
@@ -25,6 +26,9 @@ const mutations = {
   },
   SET_ISAPICREATE: (state, isApiCreate) => {
     state.isApiCreate = isApiCreate
+  },
+  SET_CAPIDATA: (state, cApiData) => {
+    state.cApiData = cApiData
   }
 }
 
@@ -46,6 +50,9 @@ const actions = {
   },
   changeIsApiCreate ({ commit }, data) {
     commit('SET_ISAPICREATE', data)
+  },
+  changeCApiData ({ commit }, data) {
+    commit('SET_CAPIDATA', data)
   }
 }
 
