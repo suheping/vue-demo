@@ -6,15 +6,13 @@
       :rules="rules"
       :model="postForm">
       <!-- 发送请求按钮 -->
-      <el-button v-loading="loading"
-        style="margin-left: 10px;"
+      <el-button style="margin-left: 10px;"
         type="success"
         @click="submitForm">
         发送请求
       </el-button>
       <!-- 保存按钮 -->
-      <el-button v-loading="loading"
-        style="margin-left: 10px;"
+      <el-button style="margin-left: 10px;"
         type="success"
         @click="saveForm">
         保存
@@ -44,7 +42,7 @@
       </el-form-item>
       <!-- 选择方法 -->
       <el-form-item label="接口方法"
-        prop="method">
+        prop="apiMethod">
         <el-select v-model="postForm.apiMethod"
           filterable
           default-first-option
@@ -58,7 +56,7 @@
         </el-select>
       </el-form-item>
       <el-form-item style="margin-bottom: 40px;"
-        prop="url">
+        prop="apiPath">
         <MDinput v-model="postForm.apiPath"
           :maxlength="100"
           required>
@@ -136,6 +134,7 @@ export default {
   components: { JsonEditor, MDinput },
   data() {
     const validateRequire = (rule, value, callback) => {
+      console.log('开始判断是否必填')
       if (value === '') {
         this.$message({
           message: rule.field + '为必传项',
@@ -146,17 +145,38 @@ export default {
         callback()
       }
     }
+    const validateExist = (rule, value, callback) => {
+      console.log('开始判断是否重复')
+      var apiList = this.$store.getters.apiList
+      var isApiNameExist = false
+      for (const i in apiList) {
+        // console.log(apiList[i].apiName)
+        if (value === apiList[i].apiName) {
+          isApiNameExist = true
+          break
+        }
+      }
+      if (isApiNameExist) {
+        this.$message({
+          message: rule.field + '已存在，请确认',
+          type: 'error'
+        })
+        callback(new Error(rule.field + '已存在，请确认'))
+      } else {
+        callback()
+      }
+    }
     return {
       // postForm: Object.assign({}, defaultForm),
       postForm: Object.assign({}, defaultForm),
-      loading: false,
       options: ['POST', 'GET'],
       protocols: ['HTTP', 'HTTPS'],
       rules: {
-        apiName: [{ validator: validateRequire }],
+        apiName: [{ validator: validateRequire }, { validator: validateExist }],
         apiMethod: [{ validator: validateRequire }],
         apiProtocol: [{ validator: validateRequire }],
         apiPath: [{ validator: validateRequire }]
+
         // headers: [{ validator: validateRequire }],
         // body: [{ validator: validateRequire }]
       }
@@ -168,7 +188,6 @@ export default {
       console.log(this.postForm)
       this.$refs.postForm.validate(valid => {
         if (valid) {
-          this.loading = true
           this.postForm.apiResp = ''
           // console.log(this.postForm.method)
           return request({
@@ -180,8 +199,6 @@ export default {
           })
             .then(response => {
               console.log(response)
-              // console.log(this.loading);
-              // this.loading = false;
               this.postForm.apiResp = response
               this.$notify({
                 title: '成功',
@@ -189,39 +206,49 @@ export default {
                 type: 'success',
                 duration: 2000
               })
-              // this.postForm.status = 'published'
-              this.loading = false
             })
             .catch(function(error) {
-              console.log(error)
-              // this.postForm.res = error
-              // this.loading = false
+              console.log('请求报错了：', error)
             })
         } else {
           console.log('error submit!!')
-          this.loading = false
-          return false
         }
       })
     },
     saveForm() {
       console.log('点击了保存按钮')
       console.log(this.postForm)
-      this.postForm.projId = this.$store.getters.projId
-      this.postForm.apiGroupId = this.$store.getters.apiGroupId
-      // 首先获取当前分组下的接口列表
-      var apiList = this.$store.getters.apiList
-      console.log('现有用例条数：', apiList.length)
-      this.postForm.apiSortNo = apiList.length + 1
-      console.log(this.postForm)
-      try {
-        // 调用新增接口接口
-        addApi(this.postForm)
-        this.$store.dispatch('appium/changeIsApiCreate', false)
-        console.log('appium--', this.$store.getters.isApiCreate)
-      } catch (error) {
-        console.log(error)
-      }
+      this.$refs.postForm.validate(valid => {
+        if (valid) {
+          this.postForm.projId = this.$store.getters.projId
+          this.postForm.apiGroupId = this.$store.getters.apiGroupId
+          // 首先获取当前分组下的接口列表
+          var apiList = this.$store.getters.apiList
+          console.log('现有用例条数：', apiList.length)
+          this.postForm.apiSortNo = apiList.length + 1
+          console.log(this.postForm)
+
+          // 调用新增接口接口
+          addApi(this.postForm)
+            .then(response => {
+              // 等待返回后，进行下一步操作
+              console.log('新增接口返回：', response)
+              this.$store.dispatch('appium/changeIsApiCreate', false)
+              console.log('appium--', this.$store.getters.isApiCreate)
+              this.$notify({
+                title: '成功',
+                message: '保存成功',
+                type: 'success',
+                duration: 2000
+              })
+            })
+            .catch(function(error) {
+              console.log('新增接口异常：', error)
+            })
+        } else {
+          console.log('error save!!')
+        }
+      })
     }
   }
 }

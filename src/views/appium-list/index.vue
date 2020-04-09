@@ -114,6 +114,8 @@ export default {
     },
     '$store.getters.isApiCreate'() {
       this.dialogFormVisible = this.$store.getters.isApiCreate
+      this.apiGroupId = this.$store.getters.apiGroupId
+      this.apiGroupName = this.$store.getters.apiGroupName
       console.log('appium-list---isApiCreate:', this.$store.getters.isApiCreate)
       console.log('appium-list---dialogFormVisible:', this.dialogFormVisible)
       this.getList()
@@ -124,7 +126,7 @@ export default {
       console.log('调用获取接口列表')
       this.listLoading = true
       this.list = await getApi(this.projId, this.apiGroupId)
-      console.log('接口列表：', this.list.length)
+      console.log('接口列表：', this.list)
       this.$store.dispatch('appium/changeApiList', this.list)
       this.listLoading = false
       this.oldList = this.list.map(v => v.apiSortNo)
@@ -173,11 +175,13 @@ export default {
       this.dialogFormVisible = true
       console.log('点击了编辑按钮')
       console.log(row)
+      this.$store.dispatch('appium/changeIsApiCreate', true)
       this.$store.dispatch('appium/changeCApiData', row)
     },
     addApi() {
       this.dialogFormVisible = true
       console.log('点击了添加按钮')
+      this.$store.dispatch('appium/changeIsApiCreate', true)
     }
   }
 }
