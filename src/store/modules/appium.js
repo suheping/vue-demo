@@ -1,6 +1,6 @@
 const state = {
   projId: 1,
-  apiGroupId: '',
+  apiGroupId: 1,
   apiGroupName: '',
   apiId: '',
   apiList: '',

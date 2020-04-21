@@ -104,7 +104,7 @@
 import JsonEditor from '@/components/JsonEditor'
 import MDinput from '@/components/MDinput'
 import request from '@/utils/request'
-import { addApi } from '@/api/appium'
+import { addApi2 } from '@/api/appium'
 
 // const jsonData = '{"key1":"value1","key2":"value2"}';
 // const urlData = 'http://192.168.1.225:9527'
@@ -120,12 +120,11 @@ const defaultForm = {
   apiPath: '', //接口路径
   apiProtocol: '', //接口协议类型
   apiMethod: '', //请求类型:get、post
-  // url: urlData, // 请求地址
-  // apiHeaders: '{}', //请求头
-  apiHeaders: headersData,
+  apiHeaders: '{}', //请求头
+  // apiHeaders: headersData,
   apiQuerys: '{}', //请求参数
-  // apiBody: '{}', //post请求体
-  apiBody: bodyData,
+  apiBody: '{}', //post请求体
+  // apiBody: bodyData,
   apiResp: '{}' //请求响应
 }
 
@@ -167,8 +166,12 @@ export default {
       }
     }
     return {
-      // postForm: Object.assign({}, defaultForm),
       postForm: Object.assign({}, defaultForm),
+      // postForm:
+      //   this.$store.getters.cApiData != ''
+      //     ? this.$store.getters.cApiData
+      //     : Object.assign({}, defaultForm),
+
       options: ['POST', 'GET'],
       protocols: ['HTTP', 'HTTPS'],
       rules: {
@@ -182,6 +185,14 @@ export default {
       }
     }
   },
+  mounted() {
+    if (this.$store.getters.cApiData != '') {
+      this.postForm = this.$store.getters.cApiData
+    } else {
+      this.postForm = Object.assign({}, defaultForm)
+    }
+  },
+
   methods: {
     submitForm() {
       // alert("点击了提交按钮");
@@ -229,7 +240,7 @@ export default {
           console.log(this.postForm)
 
           // 调用新增接口接口
-          addApi(this.postForm)
+          addApi2(this.postForm)
             .then(response => {
               // 等待返回后，进行下一步操作
               console.log('新增接口返回：', response)

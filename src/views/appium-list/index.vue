@@ -64,7 +64,7 @@
 
     <!-- 弹窗 -->
     <el-dialog :visible.sync="dialogFormVisible"
-      close>
+      @close='closeDialog'>
       <!-- <p>this is a test</p> -->
       <Appium></Appium>
     </el-dialog>
@@ -72,7 +72,7 @@
 </template>
 
 <script>
-import { getApi, updateApis } from '@/api/appium'
+import { updateApis, getApi2, getApiList, updateApi2 } from '@/api/appium'
 import Sortable from 'sortablejs'
 import Appium from '@/views/appium'
 
@@ -125,8 +125,22 @@ export default {
     async getList() {
       console.log('调用获取接口列表')
       this.listLoading = true
-      this.list = await getApi(this.projId, this.apiGroupId)
-      console.log('接口列表：', this.list)
+      // this.list = await getApi(this.projId, this.apiGroupId)
+      await getApiList(
+        this.$store.getters.projId,
+        this.$store.getters.apiGroupId,
+        'apiSortNo'
+      )
+        .then(response => {
+          // console.log(response.data)
+          // alert(response.data)
+          this.list = response.data
+          this.$store.dispatch('appium/changeApiList', this.list)
+        })
+        .catch(err => {
+          console.log(err)
+        })
+      // console.log('接口列表：', this.list)
       this.$store.dispatch('appium/changeApiList', this.list)
       this.listLoading = false
       this.oldList = this.list.map(v => v.apiSortNo)
@@ -177,11 +191,20 @@ export default {
       console.log(row)
       this.$store.dispatch('appium/changeIsApiCreate', true)
       this.$store.dispatch('appium/changeCApiData', row)
+      console.log('点击编辑，cApiData:', this.$store.getters.cApiData)
     },
     addApi() {
       this.dialogFormVisible = true
       console.log('点击了添加按钮')
       this.$store.dispatch('appium/changeIsApiCreate', true)
+      this.$store.dispatch('appium/changeCApiData', '')
+      console.log('点击添加，cApiData:', this.$store.getters.cApiData)
+    },
+    closeDialog() {
+      console.log('关闭了新增、编辑弹窗')
+      this.$store.dispatch('appium/changeIsApiCreate', false)
+      this.$store.dispatch('appium/changeCApiData', '')
+      console.log('关闭弹窗，cApiData:', this.$store.getters.cApiData)
     }
   }
 }

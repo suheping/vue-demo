@@ -41,7 +41,7 @@
               type="text"
               size="mini"
               @click="() => edit(node,data)">
-              E
+              <i class="el-icon-edit" />
             </el-button>
             <el-button type="text"
               size="mini"
@@ -52,7 +52,7 @@
               type="text"
               size="mini"
               @click="() => remove(node, data)">
-              D
+              <i class="el-icon-delete" />
             </el-button>
           </span>
         </span>
@@ -62,9 +62,7 @@
 </template>
 
 <script>
-// import { fetchList } from '@/api/article'
-import { getApiGroup } from '@/api/appium'
-import { updateApiGroup } from '@/api/appium'
+import { getApiGroup2, updateApiGroup2 } from '@/api/appium'
 
 // let id = 1000
 export default {
@@ -83,12 +81,14 @@ export default {
     this.getApiGroupData()
   },
   methods: {
-    // 调api获取接口分组数据
+    // 获取指定项目的接口分组数据
     getApiGroupData() {
-      getApiGroup(1)
+      getApiGroup2(this.$store.getters.projId)
         .then(response => {
-          this.data = response
-          console.log('data:', this.data)
+          console.log(response.data.apiGroupJson)
+          // 将'替换为"
+          this.data = JSON.parse(response.data.apiGroupJson.replace(/'/g, '"'))
+          console.log('getApiGroup2 response:', this.data)
         })
         .catch(err => {
           console.log(err)
@@ -113,7 +113,7 @@ export default {
         dropType
       )
       // 调后端更新
-      this.updateApiGroup(this.data)
+      this.updateApiGroup()
     },
     handleDrop(draggingNode, dropNode, dropType, ev) {
       console.log('tree drop: ', dropNode.data.apiGroupName, dropType)
@@ -148,7 +148,7 @@ export default {
         this.$set(data, 'children', [])
       }
       data.children.push(newChild)
-      this.updateApiGroup(this.data)
+      this.updateApiGroup()
     },
 
     remove(node, data) {
@@ -156,7 +156,7 @@ export default {
       const children = parent.data.children || parent.data
       const index = children.findIndex(d => d.id === data.id)
       children.splice(index, 1)
-      this.updateApiGroup(this.data)
+      this.updateApiGroup()
     },
 
     edit(node, data) {
@@ -187,7 +187,8 @@ export default {
         this.$set(data, 'isEdit', 0)
         // console.log('after:', data.id, data.apiGroupName)
         // console.log(this.data)
-        this.updateApiGroup(this.data)
+        console.log(this.data)
+        this.updateApiGroup()
       }
     },
 
@@ -198,9 +199,12 @@ export default {
       this.$set(data, 'isEdit', 0)
     },
 
-    updateApiGroup(data) {
-      console.log(data)
-      updateApiGroup(1, data)
+    updateApiGroup() {
+      var request_body = {
+        projId: this.$store.getters.projId,
+        apiGroupJson: this.data
+      }
+      updateApiGroup2(this.$store.getters.projId, request_body)
         .then(response => {
           console.log(response)
         })
