@@ -186,10 +186,26 @@ export default {
     }
   },
   mounted() {
+    // 只有第一次打开的时候，才调用mounted
     if (this.$store.getters.cApiData != '') {
       this.postForm = this.$store.getters.cApiData
+      console.log('capidata不为空,postForm:', this.postForm)
     } else {
-      this.postForm = Object.assign({}, defaultForm)
+      this.$refs.postForm.resetFields()
+      // this.postForm = Object.assign({}, defaultForm)
+      console.log('capidata为空,postForm:', this.postForm)
+    }
+  },
+  watch: {
+    '$store.getters.cApiData'() {
+      if (this.$store.getters.cApiData != '') {
+        this.postForm = this.$store.getters.cApiData
+        console.log('watch到capidata不为空,postForm:', this.postForm)
+      } else {
+        this.$refs.postForm.resetFields()
+        // this.postForm = Object.assign({}, defaultForm)
+        console.log('watch到capidata为空,postForm:', this.postForm)
+      }
     }
   },
 
