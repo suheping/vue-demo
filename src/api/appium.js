@@ -102,19 +102,19 @@ export function addApi2 (data) {
 // 更新接口
 export function updateApi2 (id, data) {
   return request({
-    url: 'http://127.0.0.1:8000/api2/',
+    url: 'http://127.0.0.1:8000/api2/' + id + '/',
     method: 'put',
     headers: {
-      'Content-Type': 'text/plain;charset=utf-8'  //如果写成contentType会报错
+      'Content-Type': 'application/json;charset=utf-8'  //如果写成contentType会报错
     },
-    data: JSON.stringify(data)
+    data: data
   })
 }
 
 // 删除接口
-export function deleleApi2 (id, data) {
+export function deleleApi2 (id) {
   return request({
-    url: 'http://127.0.0.1:8000/api2/',
+    url: 'http://127.0.0.1:8000/api2/' + id + '/',
     method: 'delete'
   })
 }

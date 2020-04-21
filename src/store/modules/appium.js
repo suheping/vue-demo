@@ -4,7 +4,8 @@ const state = {
   apiGroupName: '',
   apiId: '',
   apiList: '',
-  isApiCreate: '',
+  isApiCreate: false,
+  isApiEdit: false,
   cApiData: ''
 }
 
@@ -26,6 +27,9 @@ const mutations = {
   },
   SET_ISAPICREATE: (state, isApiCreate) => {
     state.isApiCreate = isApiCreate
+  },
+  SET_ISAPIEDIT: (state, isApiEdit) => {
+    state.isApiEdit = isApiEdit
   },
   SET_CAPIDATA: (state, cApiData) => {
     state.cApiData = cApiData
@@ -51,7 +55,14 @@ const actions = {
   changeIsApiCreate ({ commit }, data) {
     commit('SET_ISAPICREATE', data)
   },
+  changeIsApiCreate ({ commit }, data) {
+    commit('SET_ISAPICREATE', data)
+  },
+  changeIsApiEdit ({ commit }, data) {
+    commit('SET_ISAPIEDIT', data)
+  },
   changeCApiData ({ commit }, data) {
+    console.log('有操作修改capiData了')
     commit('SET_CAPIDATA', data)
   }
 }

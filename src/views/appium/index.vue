@@ -104,14 +104,9 @@
 import JsonEditor from '@/components/JsonEditor'
 import MDinput from '@/components/MDinput'
 import request from '@/utils/request'
-import { addApi2 } from '@/api/appium'
+import { addApi2, updateApi2 } from '@/api/appium'
 
-// const jsonData = '{"key1":"value1","key2":"value2"}';
-// const urlData = 'http://192.168.1.225:9527'
-const urlData = 'http://127.0.0.1:8000'
-const headersData = '{"Content-Type": "application/json"}'
-const bodyData =
-  '{"publicKey":"MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDtr+cB9v5bPz5D6NidUBT6eGmdjlCz0maLYTK4qnOXUJv2qKWSNEXblSrLOJ4Ea8wKZjutDGrzW+7rM935YPbVd5Igo1VTAEjYXR2AQEwFRp9sPq8a6RyT1juKzel3ca65b8F4UYl/Ud/UZeKtrO0YruntCN0pvEPDkKpooY8RBQIDAQAB","privateKey":"MIICeAIBADANBgkqhkiG9w0BAQEFAASCAmIwggJeAgEAAoGBAO2v5wH2/ls/PkPo2J1QFPp4aZ2OULPSZothMriqc5dQm/aopZI0RduVKss4ngRrzApmO60MavNb7usz3flg9tV3kiCjVVMASNhdHYBATAVGn2w+rxrpHJPWO4rN6XdxrrlvwXhRiX9R39Rl4q2s7Riu6e0I3Sm8Q8OQqmihjxEFAgMBAAECgYAIbCRfilnCCjArjN7PWEA3p4VEKxmKyoJauKBPZEh05ks+7TcmXD07eWiX5R/Ouhkm8/xAw6diJaUfzYM1bCB8jeRZiI6nTQmNMTicct5jNrmcVqFG6flRPbggt3VCjWgb3lyMGzmilNaExCP+aZ0QmG+hhrZC94HNpl8Nt647oQJBAPsJcLBnGjHlBp4H8FAHEHzqGRqnEA7hM1i3m+yhf3EBmegKJq6N3JBG810FidR8M5c78IkPEvCtXQlIOHCGYrECQQDyYuVQLiQdstgLPAx+9Emq+6MUPnX5SCbMzNmYV0HdN79A8XBJAQ8CsPcNm74Qbp+ALhWNEVXGurpVK76AeaCVAkEAzUc37hgxVHGayqllOpu8QNlRM/k+6VwAF+D00ThytR8BEr0SSpTYsuZB5WQ9BBOYQGgUVo+MBmFNfeSfumw50QJBAI1DS+gN7CiO2dC6X4IB94k5/NJIkNMG1O4ZGVvqxs0Zt1IvJES35DqqTmHU+dFz12uJ8C92Aeq/WudWhkE0IX0CQQDHJBkHJhkb/Q30XHUzVtIGi/FdIsW5qOPyUDTLp6ztaOAMtwdLQHV/sG1mqJMrtkOUcLx8D/EolFyLssaBx3Ls"}'
+const urlData = '127.0.0.1:8000'
 const defaultForm = {
   projId: '', //项目名称
   apiGroupId: '', //接口分组id
@@ -120,12 +115,10 @@ const defaultForm = {
   apiPath: '', //接口路径
   apiProtocol: '', //接口协议类型
   apiMethod: '', //请求类型:get、post
-  apiHeaders: '{}', //请求头
-  // apiHeaders: headersData,
-  apiQuerys: '{}', //请求参数
-  apiBody: '{}', //post请求体
-  // apiBody: bodyData,
-  apiResp: '{}' //请求响应
+  apiHeaders: {}, //请求头
+  apiQuerys: {}, //请求参数
+  apiBody: {}, //post请求体
+  apiResp: {} //请求响应
 }
 
 export default {
@@ -135,10 +128,10 @@ export default {
     const validateRequire = (rule, value, callback) => {
       console.log('开始判断是否必填')
       if (value === '') {
-        this.$message({
-          message: rule.field + '为必传项',
-          type: 'error'
-        })
+        // this.$message({
+        //   message: rule.field + '为必传项',
+        //   type: 'error'
+        // })
         callback(new Error(rule.field + '为必传项'))
       } else {
         callback()
@@ -149,17 +142,16 @@ export default {
       var apiList = this.$store.getters.apiList
       var isApiNameExist = false
       for (const i in apiList) {
-        // console.log(apiList[i].apiName)
         if (value === apiList[i].apiName) {
           isApiNameExist = true
           break
         }
       }
       if (isApiNameExist) {
-        this.$message({
-          message: rule.field + '已存在，请确认',
-          type: 'error'
-        })
+        // this.$message({
+        //   message: rule.field + '已存在，请确认',
+        //   type: 'error'
+        // })
         callback(new Error(rule.field + '已存在，请确认'))
       } else {
         callback()
@@ -167,21 +159,13 @@ export default {
     }
     return {
       postForm: Object.assign({}, defaultForm),
-      // postForm:
-      //   this.$store.getters.cApiData != ''
-      //     ? this.$store.getters.cApiData
-      //     : Object.assign({}, defaultForm),
-
       options: ['POST', 'GET'],
       protocols: ['HTTP', 'HTTPS'],
       rules: {
-        apiName: [{ validator: validateRequire }, { validator: validateExist }],
+        apiName: [{ validator: validateRequire }],
         apiMethod: [{ validator: validateRequire }],
         apiProtocol: [{ validator: validateRequire }],
         apiPath: [{ validator: validateRequire }]
-
-        // headers: [{ validator: validateRequire }],
-        // body: [{ validator: validateRequire }]
       }
     }
   },
@@ -189,43 +173,38 @@ export default {
     // 只有第一次打开的时候，才调用mounted
     if (this.$store.getters.cApiData != '') {
       this.postForm = this.$store.getters.cApiData
-      console.log('capidata不为空,postForm:', this.postForm)
     } else {
       this.$refs.postForm.resetFields()
-      // this.postForm = Object.assign({}, defaultForm)
-      console.log('capidata为空,postForm:', this.postForm)
     }
   },
   watch: {
-    '$store.getters.cApiData'() {
+    // 当isApiCreate变化时，执行下列操作
+    '$store.getters.isApiCreate'() {
       if (this.$store.getters.cApiData != '') {
         this.postForm = this.$store.getters.cApiData
-        console.log('watch到capidata不为空,postForm:', this.postForm)
       } else {
-        this.$refs.postForm.resetFields()
-        // this.postForm = Object.assign({}, defaultForm)
-        console.log('watch到capidata为空,postForm:', this.postForm)
+        this.postForm = Object.assign({}, defaultForm)
       }
     }
   },
 
   methods: {
     submitForm() {
-      // alert("点击了提交按钮");
-      console.log(this.postForm)
       this.$refs.postForm.validate(valid => {
         if (valid) {
           this.postForm.apiResp = ''
-          // console.log(this.postForm.method)
           return request({
-            url: urlData + this.postForm.apiPath,
+            url:
+              this.postForm.apiProtocol +
+              '://' +
+              urlData +
+              this.postForm.apiPath,
             method: this.postForm.apiMethod,
             headers: JSON.parse(this.postForm.apiHeaders),
             params: JSON.parse(this.postForm.apiQuerys),
             data: JSON.parse(this.postForm.apiBody)
           })
             .then(response => {
-              console.log(response)
               this.postForm.apiResp = response
               this.$notify({
                 title: '成功',
@@ -243,39 +222,73 @@ export default {
       })
     },
     saveForm() {
-      console.log('点击了保存按钮')
-      console.log(this.postForm)
-      this.$refs.postForm.validate(valid => {
-        if (valid) {
-          this.postForm.projId = this.$store.getters.projId
-          this.postForm.apiGroupId = this.$store.getters.apiGroupId
-          // 首先获取当前分组下的接口列表
-          var apiList = this.$store.getters.apiList
-          console.log('现有用例条数：', apiList.length)
-          this.postForm.apiSortNo = apiList.length + 1
-          console.log(this.postForm)
-
-          // 调用新增接口接口
-          addApi2(this.postForm)
-            .then(response => {
-              // 等待返回后，进行下一步操作
-              console.log('新增接口返回：', response)
-              this.$store.dispatch('appium/changeIsApiCreate', false)
-              console.log('appium--', this.$store.getters.isApiCreate)
-              this.$notify({
-                title: '成功',
-                message: '保存成功',
-                type: 'success',
-                duration: 2000
+      if (this.$store.getters.cApiData != '') {
+        this.$refs.postForm.validate(valid => {
+          if (valid) {
+            // 调后端接口更新
+            updateApi2(this.postForm.id, JSON.stringify(this.postForm))
+              .then(response => {
+                if (response.code === 1) {
+                  this.$store.dispatch('appium/changeIsApiCreate', false)
+                  this.$notify({
+                    title: '保存成功',
+                    message: '保存成功',
+                    type: 'success',
+                    duration: 2000
+                  })
+                } else {
+                  this.$notify({
+                    title: '保存失败',
+                    message: response.errors,
+                    type: 'error',
+                    duration: 2000
+                  })
+                }
               })
-            })
-            .catch(function(error) {
-              console.log('新增接口异常：', error)
-            })
-        } else {
-          console.log('error save!!')
-        }
-      })
+              .catch(err => {
+                console.log(err)
+              })
+          }
+        })
+      } else {
+        this.$refs.postForm.validate(valid => {
+          if (valid) {
+            this.postForm.projId = this.$store.getters.projId
+            this.postForm.apiGroupId = this.$store.getters.apiGroupId
+            // 首先获取当前分组下的接口列表
+            var apiList = this.$store.getters.apiList
+            this.postForm.apiSortNo = apiList.length + 1
+            console.log(this.postForm)
+
+            // 调用新增接口接口
+            addApi2(this.postForm)
+              .then(response => {
+                // 等待返回后，进行下一步操作
+                if (response.code === 1) {
+                  this.$store.dispatch('appium/changeIsApiCreate', false)
+                  this.$notify({
+                    title: '成功',
+                    message: '保存成功',
+                    type: 'success',
+                    duration: 2000
+                  })
+                } else {
+                  this.$notify({
+                    title: '保存失败',
+                    message: response.errors,
+                    type: 'error',
+                    duration: 2000
+                  })
+                }
+              })
+              .catch(function(error) {
+                console.log('新增接口异常：', error)
+              })
+          } else {
+            console.log('error save!!')
+          }
+        })
+      }
     }
   }
 }

@@ -202,7 +202,8 @@ export default {
     updateApiGroup() {
       var request_body = {
         projId: this.$store.getters.projId,
-        apiGroupJson: this.data
+        // 转为字符串格式
+        apiGroupJson: JSON.stringify(this.data)
       }
       updateApiGroup2(this.$store.getters.projId, request_body)
         .then(response => {

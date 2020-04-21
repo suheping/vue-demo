@@ -18,6 +18,7 @@ const getters = {
   apiGroupName: state => state.appium.apiGroupName,
   apiList: state => state.appium.apiList,
   isApiCreate: state => state.appium.isApiCreate,
+  isApiEdit: state => state.appium.isApiEdit,
   cApiData: state => state.appium.cApiData
 }
 export default getters

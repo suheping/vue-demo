@@ -26,14 +26,14 @@
           </template>
         </el-table-column>
 
-        <el-table-column min-width="300px"
+        <el-table-column min-width="200px"
           label="接口名称">
           <template slot-scope="{ row }">
             <span>{{ row.apiName }}</span>
           </template>
         </el-table-column>
 
-        <el-table-column width="110px"
+        <el-table-column width="200px"
           align="center"
           label="接口路径">
           <template slot-scope="{ row }">
@@ -41,12 +41,13 @@
           </template>
         </el-table-column>
 
-        <el-table-column width="110px"
-          align="center"
+        <el-table-column width="200px"
+          align="left"
           label="操作">
           <template slot-scope="{ row }">
-            <!-- <el-button @click="dialogFormVisible = !dialogFormVisible">编辑</el-button> -->
             <el-button @click="()=>editApi(row)">编辑</el-button>
+            <el-button @click="()=>handleDeleteApi(row)">删除</el-button>
+            </el-popover>
           </template>
         </el-table-column>
 
@@ -72,7 +73,13 @@
 </template>
 
 <script>
-import { updateApis, getApi2, getApiList, updateApi2 } from '@/api/appium'
+import {
+  updateApis,
+  getApi2,
+  getApiList,
+  updateApi2,
+  deleleApi2
+} from '@/api/appium'
 import Sortable from 'sortablejs'
 import Appium from '@/views/appium'
 
@@ -99,7 +106,8 @@ export default {
       dialogFormVisible: false,
       sortable: null,
       oldList: [],
-      newList: []
+      newList: [],
+      visible: false
     }
   },
   created() {
@@ -181,30 +189,75 @@ export default {
         }
       })
     },
-    submitForm() {
-      this.dialogFormVisible = false
-      console.log('你提交了dialog')
-    },
+    // submitForm() {
+    //   this.dialogFormVisible = false
+    //   console.log('你提交了dialog')
+    // },
     editApi(row) {
       this.dialogFormVisible = true
       console.log('点击了编辑按钮')
-      console.log(row)
       this.$store.dispatch('appium/changeIsApiCreate', true)
+      // this.$store.dispatch('appium/changeIsApiEdit', true)
+      console.log('打开了编辑页面，修改cApiData的值为row')
       this.$store.dispatch('appium/changeCApiData', row)
-      console.log('点击编辑，cApiData:', this.$store.getters.cApiData)
+      // console.log('点击编辑，cApiData:', this.$store.getters.cApiData)
     },
     addApi() {
       this.dialogFormVisible = true
       console.log('点击了添加按钮')
       this.$store.dispatch('appium/changeIsApiCreate', true)
+      console.log('打开了新增页面，修改capiData的值为空')
       this.$store.dispatch('appium/changeCApiData', '')
-      console.log('点击添加，cApiData:', this.$store.getters.cApiData)
+      // console.log('点击添加，cApiData:', this.$store.getters.cApiData)
+    },
+    handleDeleteApi(row) {
+      // this.visible = true
+      this.$confirm('确定删除吗?', '提示', {})
+        .then(() => {
+          console.log('确定删除', row)
+          deleleApi2(row.id)
+            .then(response => {
+              this.getList()
+              this.$notify({
+                title: '成功',
+                message: '删除成功',
+                type: 'success',
+                duration: 2000
+              })
+            })
+            .catch(err => {
+              console.log(err)
+              this.$notify({
+                title: '失败',
+                message: 'err',
+                type: 'error',
+                duration: 2000
+              })
+            })
+        })
+        .catch(() => {
+          this.$notify({
+            title: '成功',
+            message: '放弃删除',
+            type: 'info',
+            duration: 2000
+          })
+        })
+    },
+    deleteApi(row) {
+      console.log('点击了删除按钮')
+    },
+    cancelDelete() {
+      console.log('放弃删除')
+      this.visible = false
     },
     closeDialog() {
       console.log('关闭了新增、编辑弹窗')
       this.$store.dispatch('appium/changeIsApiCreate', false)
+      this.$store.dispatch('appium/changeIsApiEdit', false)
+      console.log('关闭了弹窗，修改capiData的值为空')
       this.$store.dispatch('appium/changeCApiData', '')
-      console.log('关闭弹窗，cApiData:', this.$store.getters.cApiData)
+      // console.log('关闭弹窗，cApiData:', this.$store.getters.cApiData)
     }
   }
 }
