@@ -15,9 +15,8 @@
           :min-percent='10'
           :default-percent='10'>
           <template slot="paneL">
-            <div class="top-container">
-              <p>环境、按钮</p>
-            </div>
+            <!-- 头部设置 -->
+            <ApiHeader></ApiHeader>
           </template>
           <template slot="paneR">
             <div class="bottom-container">
@@ -35,11 +34,12 @@
 import splitPane from 'vue-splitpane'
 import appiumTree1 from './components/AppiumTree'
 import AppiumList from './components/AppiumList'
+import ApiHeader from './components/ApiHeader'
 // import CreateOrEdit from './components/CreateOrEdit'
 
 export default {
   name: 'AppiumList1',
-  components: { splitPane, appiumTree1, AppiumList },
+  components: { splitPane, appiumTree1, AppiumList, ApiHeader },
   methods: {
     resize() {
       console.log('resize')

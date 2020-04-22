@@ -2,8 +2,8 @@
   <div class="app-container">
     <div name="apiHeaders"
       style="margin-bottom: 1.5cm">
-      <span>{{apiGroupName}}({{list.length}}个接口)</span>
-      <!-- <el-button style="float: right;" @click="dialogFormVisible = !dialogFormVisible">添加</el-button> -->
+      <h4>{{apiGroupName}}</h4>
+      <span>共{{list.length}}个接口</span>
       <el-button style="float: right;"
         @click="()=>addApi()">添加</el-button>
     </div>
@@ -65,6 +65,7 @@
 
     <!-- 弹窗 -->
     <el-dialog :visible.sync="dialogFormVisible"
+      :title="dialogTitle"
       @close='closeDialog'>
       <!-- <p>this is a test</p> -->
       <CreateOrEdit></CreateOrEdit>
@@ -107,7 +108,8 @@ export default {
       sortable: null,
       oldList: [],
       newList: [],
-      visible: false
+      visible: false,
+      dialogTitle: '新增接口'
     }
   },
   created() {
@@ -196,6 +198,7 @@ export default {
     editApi(row) {
       this.dialogFormVisible = true
       console.log('点击了编辑按钮')
+      this.dialogTitle = '编辑接口'
       this.$store.dispatch('appium/changeIsApiCreate', true)
       // this.$store.dispatch('appium/changeIsApiEdit', true)
       console.log('打开了编辑页面，修改cApiData的值为row')
@@ -205,6 +208,7 @@ export default {
     addApi() {
       this.dialogFormVisible = true
       console.log('点击了添加按钮')
+      this.dialogTitle = '添加接口'
       this.$store.dispatch('appium/changeIsApiCreate', true)
       console.log('打开了新增页面，修改capiData的值为空')
       this.$store.dispatch('appium/changeCApiData', '')

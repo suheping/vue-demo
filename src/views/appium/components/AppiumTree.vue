@@ -19,34 +19,27 @@
         :allow-drag="allowDrag">
         <span class="custom-tree-node"
           slot-scope="{ node, data }">
-          <!-- 如果是编辑状态 -->
+          <!-- 如果是编辑状态，显示输入框 -->
           <template v-if="data.isEdit==1">
             <el-input ref="input"
               @blur="() => submitEdit(node,data)"
               v-model="newApiGroupName"
               style="height:20px line-height:20px"></el-input>
-            <!-- 放弃、提交按钮废弃，改为失去焦点自动提交 -->
-            <!-- <el-button type="text"
-              size="mini"
-              @click="() => cancelEdit(node,data)">C</el-button>
-            <el-button type="text"
-              size="mini"
-              @click="() => submitEdit(node,data)">S</el-button> -->
           </template>
-          <!-- 如果不是编辑状态 -->
+          <!-- 如果不是编辑状态，显示分组名称span -->
           <span v-else
             v-text="data.apiGroupName"></span>
           <span>
+            <el-button type="text"
+              size="mini"
+              @click="() => append(node,data)">
+              +
+            </el-button>
             <el-button v-if="data.id!=1"
               type="text"
               size="mini"
               @click="() => edit(node,data)">
               <i class="el-icon-edit" />
-            </el-button>
-            <el-button type="text"
-              size="mini"
-              @click="() => append(node,data)">
-              +
             </el-button>
             <el-button v-if="data.id!=1"
               type="text"
