@@ -67,7 +67,7 @@
     <el-dialog :visible.sync="dialogFormVisible"
       @close='closeDialog'>
       <!-- <p>this is a test</p> -->
-      <Appium></Appium>
+      <CreateOrEdit></CreateOrEdit>
     </el-dialog>
   </div>
 </template>
@@ -81,11 +81,11 @@ import {
   deleleApi2
 } from '@/api/appium'
 import Sortable from 'sortablejs'
-import Appium from '@/views/appium'
+import CreateOrEdit from './CreateOrEdit'
 
 export default {
   name: 'AppiumList',
-  components: { Appium },
+  components: { CreateOrEdit },
   filters: {
     statusFilter(status) {
       const statusMap = {

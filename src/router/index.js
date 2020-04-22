@@ -108,7 +108,8 @@ export const constantRoutes = [
       }
     ]
   },
-  // peace新增router，20200316
+  // peace新增router，20200422
+
   {
     path: '/appium',
     component: Layout,
@@ -116,62 +117,12 @@ export const constantRoutes = [
       {
         path: 'index',
         component: () => import('@/views/appium/index'),
-        name: 'appium',
+        name: '接口维护',
         meta: { title: 'appium', icon: 'clipboard' }
       }
     ]
   },
 
-  {
-    path: '/appium-list',
-    component: Layout,
-    children: [
-      {
-        path: 'index',
-        component: () => import('@/views/appium-list/index'),
-        name: 'appiumList',
-        meta: { title: 'appiumList', icon: 'clipboard' }
-      }
-    ]
-  },
-
-  {
-    path: '/appium-tree',
-    component: Layout,
-    children: [
-      {
-        path: 'index',
-        component: () => import('@/views/appium-tree/index'),
-        name: 'appiumTree',
-        meta: { title: 'appiumTree', icon: 'clipboard' }
-      }
-    ]
-  },
-
-  {
-    path: '/appium-list1',
-    component: Layout,
-    children: [
-      {
-        path: 'index',
-        component: () => import('@/views/appium-list1/index'),
-        name: 'appiumList1',
-        meta: { title: 'appiumList1', icon: 'clipboard' }
-      }
-    ]
-  },
-  {
-    path: '/appium-tree1',
-    component: Layout,
-    children: [
-      {
-        path: 'index',
-        component: () => import('@/views/appium-tree1/index'),
-        name: 'appiumTree1',
-        meta: { title: 'appiumTree1', icon: 'clipboard' }
-      }
-    ]
-  },
   {
     path: '/profile',
     component: Layout,
